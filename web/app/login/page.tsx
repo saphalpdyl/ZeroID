@@ -1,0 +1,7 @@
+ 'use client';
+import { FormEvent, useState } from 'react';
+import { postJSON, validEmail } from '../../lib/validation';
+export default function Login(){const[email,setEmail]=useState('');const[password,setPassword]=useState('');const[busy,setBusy]=useState(false);const[result,setResult]=useState<{ok:boolean;message:string}|null>(null);
+async function submit(e:FormEvent){e.preventDefault();setResult(null);if(!validEmail(email)||!password)return setResult({ok:false,message:'Enter a valid email and password.'});setBusy(true);try{const r=await postJSON('/api/login',{email:email.trim(),password});if(r.ok){window.location.assign('/totp');return;}setResult(r);}finally{setBusy(false);}}
+return <section className="panel"><div className="kicker">Step 1 of 2</div><h1>Sign in</h1><p className="muted">Your password is only the first step. Your authenticator code is required next.</p><form onSubmit={submit}><label htmlFor="email">Email</label><input id="email" type="email" required autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)}/><label htmlFor="pass">Password</label><input id="pass" type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/><button disabled={busy}>{busy?'Checking...':'Continue securely'}</button></form>{result&&<p role="status" className={'note '+(result.ok?'success':'error')}>{result.message}</p>}<div className="links"><a href="/register">Create account</a><a href="/verify-email">Email verification</a></div></section>;
+}
