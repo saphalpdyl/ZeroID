@@ -1,0 +1,36 @@
+# Local development infrastructure for ZeroID.
+#   docker compose up -d
+# Postgres: localhost:5432   MailHog SMTP: localhost:1025   MailHog UI: http://localhost:8025
+#
+# Image versions are pinned (supply-chain: OWASP A03). Ports are bound to
+# 127.0.0.1 so nothing is exposed to the local network.
+# Secrets come from .env (copy .env.example); none are hard-coded here.
+
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: zeroid
+      POSTGRES_USER: zeroid_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      ZEROID_APP_DB_PASSWORD: ${ZEROID_APP_DB_PASSWORD:?set ZEROID_APP_DB_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db:/zeroid-db:ro
+      - ./db/docker-init.sh:/docker-entrypoint-initdb.d/00-zeroid-init.sh:ro
+      - zeroid-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zeroid_owner -d zeroid"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+volumes:
+  zeroid-pgdata:

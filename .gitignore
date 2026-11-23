@@ -1,0 +1,19 @@
+# Secrets
+.env
+.env.local
+*.env.local
+*.pem
+*.key
+
+# Dependencies / build output
+node_modules/
+web/.next/
+web/out/
+*.exe
+*.test
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
