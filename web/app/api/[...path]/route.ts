@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-const ALLOWED = new Set(['register', 'login', 'totp/verify', 'email/verify', 'email/resend']);
+const ALLOWED = new Set(['register', 'login', 'totp/verify', 'email/verify', 'email/resend', 'logout']);
 export async function POST(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
  const { path } = await context.params;
  const endpoint = path.join('/');
